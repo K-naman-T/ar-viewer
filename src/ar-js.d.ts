@@ -1,0 +1,1 @@
+declare module 'ar.js/three.js/build/ar.js';
