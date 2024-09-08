@@ -14,12 +14,6 @@ RUN npm cache clean --force
 # Use npm install with --legacy-peer-deps to handle any peer dependency issues
 RUN npm install --legacy-peer-deps --no-audit --no-fund
 
-RUN npm install --no-optional
-
-RUN npm set fetch-timeout 300000
-
-
-
 # Copy the rest of your application files
 COPY . .
 

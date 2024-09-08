@@ -3,6 +3,9 @@ import '@google/model-viewer';
 
 const App = () => {
   const modelViewerRef = useRef(null);
+  const modelViewerRefCoalTruck = useRef(null);
+  const modelViewerRefEmptyTruck = useRef(null);
+  const modelViewerRefDozer = useRef(null);
   const modelViewerRefJadupatia = useRef(null);
   const modelViewerRefKhovar = useRef(null);
   const modelViewerRefPaitkar = useRef(null);
@@ -38,44 +41,51 @@ const App = () => {
     };
 
     setupARStatus(modelViewerRef.current);
+    setupARStatus(modelViewerRefCoalTruck.current);
+    setupARStatus(modelViewerRefEmptyTruck.current);
+    setupARStatus(modelViewerRefDozer.current);
     setupARStatus(modelViewerRefJadupatia.current);
     setupARStatus(modelViewerRefKhovar.current);
     setupARStatus(modelViewerRefPaitkar.current);
   }, []);
 
-  
-
   return (
-    <div className="w-full min-h-screen bg-white flex flex-col" style={{ margin: 0, padding: 0, overflowX: 'hidden' }}>
-      <div className="relative w-full flex-grow" style={{ marginTop: '20px' }}>
-        <div
-          className="w-full lg:h-[500px] h-[300px]"
-          style={{ backgroundColor: 'white', margin: 0, padding: 0 }}
-        ></div>
-        <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center z-[9]">
-          <img src="./logo-banner.png" className="max-w-[70vw]" alt="Hindi Text" />
-          <div className="text-2xl font-bold">AUGMENTED REALITY GALLERY</div>
+    <div className="w-full min-h-screen flex flex-col" style={{ margin: 0, padding: 0, overflowX: 'hidden', backgroundColor: 'rgba(139, 92, 246, 0.2)' }}>
+      <div className="relative w-full flex-grow flex items-center justify-center" style={{ paddingTop: '60px' }}>
+        <div className="flex flex-col items-center justify-center z-[9]">
+          <img src="./logo-banner.png" className="max-w-[70vw] mb-4" alt="Logo Banner" />
+          <div
+            className="text-2xl font-bold"
+            style={{
+              fontFamily: "'Space Grotesk', sans-serif",
+              background: 'linear-gradient(to right, #8b5cf6, #f97316)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            AUGMENTED REALITY GALLERY
+          </div>
         </div>
       </div>
 
       <div className="w-full h-fit flex flex-col items-center justify-center flex-grow" style={{ marginTop: '20px' }}>
 
+        {/* Model Viewer 1: Dump Truck */}
         <div className="flex flex-wrap lg:flex-nowrap justify-between w-full lg:h-[500px]">
           <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
             <div
               className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center"
               style={{
-                borderRadius: '30px', // Make corners round
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)', // Add shadows on all four sides
+                borderRadius: '30px',
+                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
                 margin: '0 auto',
               }}
             >
               <model-viewer
                 ref={modelViewerRef}
-                src="/untitled.glb"
-                alt="3D Model"
+                src="/dump truck.glb"
+                alt="Dump Truck"
                 poster="/poster.png"
-                auto-rotate
                 camera-controls
                 ar
                 ar-modes="webxr scene-viewer quick-look"
@@ -111,8 +121,139 @@ const App = () => {
             <div
               className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center"
               style={{
-                borderRadius: '30px', // Make corners round
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)', // Add shadows on all four sides
+                borderRadius: '30px',
+                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
+                margin: '0 auto',
+              }}
+            >
+              <model-viewer
+                ref={modelViewerRefCoalTruck}
+                src="/coal truck.glb"
+                alt="Coal Truck"
+                poster="/poster.png"
+                camera-controls
+                ar
+                ar-modes="webxr scene-viewer quick-look"
+                loading="lazy"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: 'transparent',
+                }}
+                className="object-cover"
+                pixel-ratio="2"
+              ></model-viewer>
+            </div>
+          </div>
+
+          <div className="w-full lg:w-1/2 relative flex items-center justify-center p-4">
+            <div className="relative z-[9] flex flex-col items-center lg:items-end justify-center gap-2 p-4">
+              <div className="text-2xl md:text-4xl font-bold text-center lg:text-right">
+                COAL TRUCK
+              </div>
+              <div className="text-md md:text-xl text-center lg:text-right font-base max-w-full lg:px-0 px-5">
+                This coal truck is used for transporting coal from mining sites
+                to processing plants or power stations, built to handle heavy
+                loads in rugged conditions.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap lg:flex-nowrap justify-between w-full lg:h-[500px] mt-8">
+          <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
+            <div
+              className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center"
+              style={{
+                borderRadius: '30px',
+                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
+                margin: '0 auto',
+              }}
+            >
+              <model-viewer
+                ref={modelViewerRefEmptyTruck}
+                src="/empty truck.glb"
+                alt="Empty Truck"
+                poster="/poster.png"
+                camera-controls
+                ar
+                ar-modes="webxr scene-viewer quick-look"
+                loading="lazy"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: 'transparent',
+                }}
+                className="object-cover"
+                pixel-ratio="2"
+              ></model-viewer>
+            </div>
+          </div>
+
+          <div className="w-full lg:w-1/2 relative flex items-center justify-center p-4">
+            <div className="relative z-[9] flex flex-col items-center lg:items-end justify-center gap-2 p-4">
+              <div className="text-2xl md:text-4xl font-bold text-center lg:text-right">
+                EMPTY TRUCK
+              </div>
+              <div className="text-md md:text-xl text-center lg:text-right font-base max-w-full lg:px-0 px-5">
+                The empty truck is ready for loading, designed to handle a
+                variety of heavy materials for mining or construction tasks.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap lg:flex-nowrap justify-between w-full lg:h-[500px] mt-8">
+          <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
+            <div
+              className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center"
+              style={{
+                borderRadius: '30px',
+                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
+                margin: '0 auto',
+              }}
+            >
+              <model-viewer
+                ref={modelViewerRefDozer}
+                src="/dozer.glb"
+                alt="Dozer"
+                poster="/poster.png"
+                camera-controls
+                ar
+                ar-modes="webxr scene-viewer quick-look"
+                loading="lazy"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: 'transparent',
+                }}
+                className="object-cover"
+                pixel-ratio="2"
+              ></model-viewer>
+            </div>
+          </div>
+
+          <div className="w-full lg:w-1/2 relative flex items-center justify-center p-4">
+            <div className="relative z-[9] flex flex-col items-center lg:items-end justify-center gap-2 p-4">
+              <div className="text-2xl md:text-4xl font-bold text-center lg:text-right">
+                DOZER
+              </div>
+              <div className="text-md md:text-xl text-center lg:text-right font-base max-w-full lg:px-0 px-5">
+                The dozer is a versatile earth-moving machine used for clearing
+                land, pushing materials, and leveling surfaces in mining and
+                construction.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap lg:flex-nowrap justify-between w-full lg:h-[500px] mt-8">
+          <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
+            <div
+              className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center"
+              style={{
+                borderRadius: '30px',
+                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
                 margin: '0 auto',
               }}
             >
@@ -121,7 +262,6 @@ const App = () => {
                 src="/jadupatia.glb"
                 alt="Jadupatia Art Style"
                 poster="/poster.png"
-                auto-rotate
                 camera-controls
                 ar
                 ar-modes="webxr scene-viewer quick-look"
@@ -151,14 +291,13 @@ const App = () => {
           </div>
         </div>
 
-        {/* Model Viewer 3: Khovar Art Style */}
         <div className="flex flex-wrap lg:flex-nowrap justify-between w-full lg:h-[500px] mt-8">
           <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
             <div
               className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center"
               style={{
-                borderRadius: '30px', // Make corners round
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)', // Add shadows on all four sides
+                borderRadius: '30px',
+                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
                 margin: '0 auto',
               }}
             >
@@ -167,7 +306,6 @@ const App = () => {
                 src="/khovar.glb"
                 alt="Khovar Art Style"
                 poster="/poster.png"
-                auto-rotate
                 camera-controls
                 ar
                 ar-modes="webxr scene-viewer quick-look"
@@ -190,21 +328,20 @@ const App = () => {
               </div>
               <div className="text-md md:text-xl text-center lg:text-right font-base max-w-full lg:px-0 px-5">
                 Khovar is a traditional painting style from Jharkhand, often
-                used to decorate walls during marriage ceremonies, characterized
-                by its monochrome patterns and natural pigments.
+                used to decorate walls during marriage ceremonies,
+                characterized by its monochrome patterns and natural pigments.
               </div>
             </div>
           </div>
         </div>
 
-        {/* Model Viewer 4: Paitkar Art Style */}
         <div className="flex flex-wrap lg:flex-nowrap justify-between w-full lg:h-[500px] mt-8">
           <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
             <div
               className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center gradient-border"
               style={{
-                borderRadius: '30px', // Make corners round
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)', // Add shadows on all four sides
+                borderRadius: '30px',
+                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
                 margin: '0 auto',
               }}
             >
@@ -213,7 +350,6 @@ const App = () => {
                 src="/paitkar.glb"
                 alt="Paitkar Art Style"
                 poster="/poster.png"
-                auto-rotate
                 camera-controls
                 ar
                 ar-modes="webxr scene-viewer quick-look"
@@ -245,14 +381,15 @@ const App = () => {
         </div>
       </div>
 
-      <footer className="w-full bg-gradient-to-r from-violet-500 to-orange-500 text-black py-4 flex flex-col items-center" style={{ marginBottom: 0 }}>
+      <footer
+        className="w-full bg-gradient-to-r from-violet-500 to-orange-500 text-black py-4 flex flex-col items-center"
+        style={{ marginBottom: 0 }}
+      >
         <div className="flex items-center mb-2">
           <span className="mr-2">Powered By</span>
           <img src="./vc.png" alt="VC Logo" className="h-6" />
         </div>
-        <div className="text-sm">
-          &copy; {new Date().getFullYear()} All Rights Reserved
-        </div>
+        <div className="text-sm">&copy; {new Date().getFullYear()} All Rights Reserved</div>
       </footer>
     </div>
   );
