@@ -1,17 +1,41 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import '@google/model-viewer';
+import ModelUploader from './components/ModelUploader';
+import { modelsAPI } from './services/api';
+import Login from './components/Login';
+import Register from './components/Register';
+import DeleteModelButton from './components/DeleteModelButton';
+import { useAuth } from './context/AuthContext';
 
 const App = () => {
-  const modelViewerRef = useRef(null);
-  const modelViewerRefCoalTruck = useRef(null);
-  const modelViewerRefEmptyTruck = useRef(null);
-  const modelViewerRefDozer = useRef(null);
-  const modelViewerRefJadupatia = useRef(null);
-  const modelViewerRefKhovar = useRef(null);
-  const modelViewerRefPaitkar = useRef(null);
+  const { isAuthenticated, isAdmin } = useAuth();
+  const [models, setModels] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const modelViewerRefs = useRef({});
+
+  // Improve the fetchModels function
+  const fetchModels = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const { data } = await modelsAPI.getModels();
+      setModels(data);
+    } catch (err) {
+      console.error('Error fetching models:', err);
+      setError('Failed to load models. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const setupARStatus = (modelViewer) => {
+    fetchModels();
+  }, []);
+
+  // Setup AR status tracking
+  useEffect(() => {
+    const setupARStatus = (id, modelViewer) => {
       if (modelViewer) {
         const cornerImage = document.createElement('img');
         cornerImage.src = './path_to_your_logo.png';
@@ -40,14 +64,16 @@ const App = () => {
       }
     };
 
-    setupARStatus(modelViewerRef.current);
-    setupARStatus(modelViewerRefCoalTruck.current);
-    setupARStatus(modelViewerRefEmptyTruck.current);
-    setupARStatus(modelViewerRefDozer.current);
-    setupARStatus(modelViewerRefJadupatia.current);
-    setupARStatus(modelViewerRefKhovar.current);
-    setupARStatus(modelViewerRefPaitkar.current);
-  }, []);
+    // Set up AR status for each model viewer
+    Object.entries(modelViewerRefs.current).forEach(([id, ref]) => {
+      if (ref) setupARStatus(id, ref);
+    });
+  }, [models]);
+
+  // Add this function to handle model deletion
+  const handleModelDeleted = async () => {
+    await fetchModels();
+  };
 
   return (
     <div className="w-full min-h-screen flex flex-col" style={{ margin: 0, padding: 0, overflowX: 'hidden', backgroundColor: 'rgba(139, 92, 246, 0.2)' }}>
@@ -65,321 +91,82 @@ const App = () => {
           >
             AUGMENTED REALITY GALLERY
           </div>
+          
+          {/* Login and Register buttons */}
+          <div className="flex space-x-4">
+            <Login />
+            <Register />
+          </div>
         </div>
       </div>
 
       <div className="w-full h-fit flex flex-col items-center justify-center flex-grow" style={{ marginTop: '20px' }}>
-
-        {/* Model Viewer 1: Dump Truck */}
-        <div className="flex flex-wrap lg:flex-nowrap justify-between w-full lg:h-[500px]">
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
-            <div
-              className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center"
-              style={{
-                borderRadius: '30px',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
-                margin: '0 auto',
-              }}
-            >
-              <model-viewer
-                ref={modelViewerRef}
-                src="/dump truck.glb"
-                alt="Dump Truck"
-                poster="/poster.png"
-                camera-controls
-                ar
-                ar-modes="webxr scene-viewer quick-look"
-                loading="lazy"
-                rotation="0deg 90deg 0deg"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: 'transparent',
-                }}
-                className="object-cover"
-                pixel-ratio="2"
-              ></model-viewer>
-            </div>
+        {loading ? (
+          <div className="flex items-center justify-center p-10">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-violet-500"></div>
           </div>
-
-          <div className="w-full lg:w-1/2 relative flex items-center justify-center p-4">
-            <div className="relative z-[9] flex flex-col items-center lg:items-end justify-center gap-2 p-4">
-              <div className="text-2xl md:text-4xl font-bold text-center lg:text-right">
-                DUMP TRUCK
-              </div>
-              <div className="text-md md:text-xl text-center lg:text-right font-base max-w-full lg:px-0 px-5">
-                This is a mining dump truck, a heavy-duty vehicle designed to
-                transport large volumes of materials such as ore, coal, or
-                overburden in mining operations.
-              </div>
-            </div>
+        ) : error ? (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
+            {error}
           </div>
-        </div>
-
-        <div className="flex flex-wrap lg:flex-nowrap justify-between w-full lg:h-[500px] mt-8">
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
-            <div
-              className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center"
-              style={{
-                borderRadius: '30px',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
-                margin: '0 auto',
-              }}
-            >
-              <model-viewer
-                ref={modelViewerRefCoalTruck}
-                src="/coal truck.glb"
-                alt="Coal Truck"
-                poster="/poster.png"
-                camera-controls
-                ar
-                ar-modes="webxr scene-viewer quick-look"
-                loading="lazy"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: 'transparent',
-                }}
-                className="object-cover"
-                pixel-ratio="2"
-              ></model-viewer>
-            </div>
-          </div>
-
-          <div className="w-full lg:w-1/2 relative flex items-center justify-center p-4">
-            <div className="relative z-[9] flex flex-col items-center lg:items-end justify-center gap-2 p-4">
-              <div className="text-2xl md:text-4xl font-bold text-center lg:text-right">
-                COAL TRUCK
+        ) : (
+          models.map((model) => (
+            <div key={model._id} className="flex flex-wrap lg:flex-nowrap justify-between w-full lg:h-[500px] mt-8">
+              <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
+                <div
+                  className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center"
+                  style={{
+                    borderRadius: '30px',
+                    boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
+                    margin: '0 auto',
+                  }}
+                >
+                  <model-viewer
+                    ref={el => modelViewerRefs.current[model._id] = el}
+                    src={model.modelPath}
+                    alt={model.title}
+                    poster={model.poster}
+                    camera-controls
+                    ar
+                    ar-modes="webxr scene-viewer quick-look"
+                    loading="lazy"
+                    rotation={model.rotation}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      backgroundColor: 'transparent',
+                    }}
+                    className="object-cover"
+                    pixel-ratio="2"
+                  ></model-viewer>
+                </div>
               </div>
-              <div className="text-md md:text-xl text-center lg:text-right font-base max-w-full lg:px-0 px-5">
-                This coal truck is used for transporting coal from mining sites
-                to processing plants or power stations, built to handle heavy
-                loads in rugged conditions.
+
+              <div className="w-full lg:w-1/2 relative flex items-center justify-center p-4">
+                <div className="relative z-[9] flex flex-col items-center lg:items-end justify-center gap-2 p-4 w-full">
+                  <div className="flex justify-between items-center w-full">
+                    <div className="text-2xl md:text-4xl font-bold text-center lg:text-right">
+                      {model.title}
+                    </div>
+                    {isAuthenticated && isAdmin && (
+                      <DeleteModelButton 
+                        modelId={model._id} 
+                        onModelDeleted={handleModelDeleted} 
+                      />
+                    )}
+                  </div>
+                  <div className="text-md md:text-xl text-center lg:text-right font-base max-w-full lg:px-0 px-5">
+                    {model.description}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap lg:flex-nowrap justify-between w-full lg:h-[500px] mt-8">
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
-            <div
-              className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center"
-              style={{
-                borderRadius: '30px',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
-                margin: '0 auto',
-              }}
-            >
-              <model-viewer
-                ref={modelViewerRefEmptyTruck}
-                src="/empty truck.glb"
-                alt="Empty Truck"
-                poster="/poster.png"
-                camera-controls
-                ar
-                ar-modes="webxr scene-viewer quick-look"
-                loading="lazy"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: 'transparent',
-                }}
-                className="object-cover"
-                pixel-ratio="2"
-              ></model-viewer>
-            </div>
-          </div>
-
-          <div className="w-full lg:w-1/2 relative flex items-center justify-center p-4">
-            <div className="relative z-[9] flex flex-col items-center lg:items-end justify-center gap-2 p-4">
-              <div className="text-2xl md:text-4xl font-bold text-center lg:text-right">
-                EMPTY TRUCK
-              </div>
-              <div className="text-md md:text-xl text-center lg:text-right font-base max-w-full lg:px-0 px-5">
-                The empty truck is ready for loading, designed to handle a
-                variety of heavy materials for mining or construction tasks.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap lg:flex-nowrap justify-between w-full lg:h-[500px] mt-8">
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
-            <div
-              className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center"
-              style={{
-                borderRadius: '30px',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
-                margin: '0 auto',
-              }}
-            >
-              <model-viewer
-                ref={modelViewerRefDozer}
-                src="/dozer.glb"
-                alt="Dozer"
-                poster="/poster.png"
-                camera-controls
-                ar
-                ar-modes="webxr scene-viewer quick-look"
-                loading="lazy"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: 'transparent',
-                }}
-                className="object-cover"
-                pixel-ratio="2"
-              ></model-viewer>
-            </div>
-          </div>
-
-          <div className="w-full lg:w-1/2 relative flex items-center justify-center p-4">
-            <div className="relative z-[9] flex flex-col items-center lg:items-end justify-center gap-2 p-4">
-              <div className="text-2xl md:text-4xl font-bold text-center lg:text-right">
-                DOZER
-              </div>
-              <div className="text-md md:text-xl text-center lg:text-right font-base max-w-full lg:px-0 px-5">
-                The dozer is a versatile earth-moving machine used for clearing
-                land, pushing materials, and leveling surfaces in mining and
-                construction.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap lg:flex-nowrap justify-between w-full lg:h-[500px] mt-8">
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
-            <div
-              className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center"
-              style={{
-                borderRadius: '30px',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
-                margin: '0 auto',
-              }}
-            >
-              <model-viewer
-                ref={modelViewerRefJadupatia}
-                src="/jadupatia.glb"
-                alt="Jadupatia Art Style"
-                poster="/poster.png"
-                camera-controls
-                ar
-                ar-modes="webxr scene-viewer quick-look"
-                loading="lazy"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: 'transparent',
-                }}
-                className="object-cover"
-                pixel-ratio="2"
-              ></model-viewer>
-            </div>
-          </div>
-
-          <div className="w-full lg:w-1/2 relative flex items-center justify-center p-4">
-            <div className="relative z-[9] flex flex-col items-center lg:items-end justify-center gap-2 p-4">
-              <div className="text-2xl md:text-4xl font-bold text-center lg:text-right">
-                JADUPATIA ART STYLE
-              </div>
-              <div className="text-md md:text-xl text-center lg:text-right font-base max-w-full lg:px-0 px-5">
-                Jadupatia art is a traditional folk painting practiced by the
-                Santhal tribe, depicting stories of the afterlife, fantasy
-                worlds, and legends of gods using natural earth tones.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap lg:flex-nowrap justify-between w-full lg:h-[500px] mt-8">
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
-            <div
-              className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center"
-              style={{
-                borderRadius: '30px',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
-                margin: '0 auto',
-              }}
-            >
-              <model-viewer
-                ref={modelViewerRefKhovar}
-                src="/khovar.glb"
-                alt="Khovar Art Style"
-                poster="/poster.png"
-                camera-controls
-                ar
-                ar-modes="webxr scene-viewer quick-look"
-                loading="lazy"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: 'transparent',
-                }}
-                className="object-cover"
-                pixel-ratio="2"
-              ></model-viewer>
-            </div>
-          </div>
-
-          <div className="w-full lg:w-1/2 relative flex items-center justify-center p-4">
-            <div className="relative z-[9] flex flex-col items-center lg:items-end justify-center gap-2 p-4">
-              <div className="text-2xl md:text-4xl font-bold text-center lg:text-right">
-                KHOVAR ART STYLE
-              </div>
-              <div className="text-md md:text-xl text-center lg:text-right font-base max-w-full lg:px-0 px-5">
-                Khovar is a traditional painting style from Jharkhand, often
-                used to decorate walls during marriage ceremonies,
-                characterized by its monochrome patterns and natural pigments.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap lg:flex-nowrap justify-between w-full lg:h-[500px] mt-8">
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
-            <div
-              className="w-full h-[300px] lg:h-full bg-white rounded-lg shadow-lg overflow-hidden p-4 flex items-center justify-center gradient-border"
-              style={{
-                borderRadius: '30px',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
-                margin: '0 auto',
-              }}
-            >
-              <model-viewer
-                ref={modelViewerRefPaitkar}
-                src="/paitkar.glb"
-                alt="Paitkar Art Style"
-                poster="/poster.png"
-                camera-controls
-                ar
-                ar-modes="webxr scene-viewer quick-look"
-                loading="lazy"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: 'transparent',
-                }}
-                className="object-cover"
-                pixel-ratio="2"
-              ></model-viewer>
-            </div>
-          </div>
-
-          <div className="w-full lg:w-1/2 relative flex items-center justify-center p-4">
-            <div className="relative z-[9] flex flex-col items-center lg:items-end justify-center gap-2 p-4">
-              <div className="text-2xl md:text-4xl font-bold text-center lg:text-right">
-                PAITKAR ART STYLE
-              </div>
-              <div className="text-md md:text-xl text-center lg:text-right font-base max-w-full lg:px-0 px-5">
-                Paitkar is one of the oldest tribal art forms in Jharkhand,
-                known for its narrative scroll paintings that depict scenes of
-                mythology and local folklore using natural dyes and earth
-                colors.
-              </div>
-            </div>
-          </div>
-        </div>
+          ))
+        )}
       </div>
+
+      {/* Model uploader component */}
+      <ModelUploader onModelAdded={fetchModels} />
 
       <footer
         className="w-full bg-gradient-to-r from-violet-500 to-orange-500 text-black py-4 flex flex-col items-center"
